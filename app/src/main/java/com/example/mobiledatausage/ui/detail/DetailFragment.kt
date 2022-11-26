@@ -9,10 +9,9 @@ import androidx.core.view.doOnAttach
 import androidx.lifecycle.Observer
 import androidx.viewpager2.widget.ViewPager2
 import com.example.mobiledatausage.R
-import com.example.mobiledatausage.model.MobileDataUsageAnnual
-import com.example.mobiledatausage.ui.list.MobileUsageListFragment
+import com.example.mobiledatausage.tracking.Tracker
+import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.viewModel
-import java.text.FieldPosition
 
 class DetailFragment : Fragment() {
 
@@ -21,6 +20,7 @@ class DetailFragment : Fragment() {
     private lateinit var viewPager: ViewPager2
 
     private val viewModel by viewModel<DetailViewModel>()
+    private val tracker: Tracker by inject()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -40,12 +40,18 @@ class DetailFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         viewPager = view.findViewById(R.id.viewpager)
         detailViewModel.getMobileDataUsage()
-        viewModel.observeAnnualLiveData().observe(viewLifecycleOwner, Observer {
+        viewModel.observeAnnualLiveData().observe(viewLifecycleOwner) {
             with(viewPager) {
+                registerOnPageChangeCallback(object : ViewPager2.OnPageChangeCallback() {
+                    override fun onPageSelected(position: Int) {
+                        super.onPageSelected(position)
+                        tracker.onPageSeenEvent(it[position])
+                    }
+                })
                 adapter = ViewPager2Adapter(it)
                 doOnAttach { setCurrentItem(position, false) }
             }
-        })
+        }
     }
 
     companion object {
