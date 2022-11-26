@@ -25,7 +25,6 @@ class ListViewModel(private val mainRepository: MainRepository): ViewModel() {
             val dataUsage = mainRepository.getDataUsage("a807b7ab-6cad-4aa6-87d0-e283a7353a0f", "100")
             if (dataUsage != null) {
                 withContext(Dispatchers.Main) {
-                    Log.d("Deepak", dataUsage.toString())
                     val combinedData = combineDataUsageAnnually(dataUsage)
                     mutableAnnualLiveData.value = combinedData
                 }
