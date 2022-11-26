@@ -1,7 +1,6 @@
 package com.example.mobiledatausage.ui.list
 
 import android.os.Bundle
-import android.util.Log
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -10,8 +9,9 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.lifecycle.Observer
+import com.example.mobiledatausage.MainActivity
 import com.example.mobiledatausage.R
-import com.example.mobiledatausage.viewmodels.ListViewModel
+import com.example.mobiledatausage.ui.detail.DetailFragment
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 /**
@@ -56,8 +56,12 @@ class MobileUsageListFragment : Fragment() {
         listViewModel.observeAnnualLiveData().observe(viewLifecycleOwner, Observer {
             with(list) {
                 adapter = MobileUsageRecyclerViewAdapter(it) {
-                        mobileDataUsageAnnual ->
-                    Log.d("DEEPAK", "${mobileDataUsageAnnual.year} -> ${mobileDataUsageAnnual.dataUsage}" )
+                        position ->
+                    activity?.let {
+                        with(activity as MainActivity){
+                            navigateToFragment(DetailFragment.newInstance(position), true)
+                        }
+                    }
                 }
             }
         })
@@ -65,10 +69,7 @@ class MobileUsageListFragment : Fragment() {
 
     companion object {
 
-        // TODO: Customize parameter argument names
         const val ARG_COLUMN_COUNT = "column-count"
-
-        // TODO: Customize parameter initialization
         @JvmStatic
         fun newInstance(columnCount: Int) =
             MobileUsageListFragment().apply {

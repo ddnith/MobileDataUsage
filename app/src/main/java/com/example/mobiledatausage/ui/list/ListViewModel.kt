@@ -1,4 +1,4 @@
-package com.example.mobiledatausage.viewmodels
+package com.example.mobiledatausage.ui.list
 
 import android.util.Log
 import androidx.lifecycle.LiveData
@@ -44,9 +44,9 @@ class ListViewModel(private val mainRepository: MainRepository): ViewModel() {
 
         val result: MutableList<MobileDataUsageAnnual> = mutableListOf()
         for ((key,value ) in map) {
-            result.add(MobileDataUsageAnnual(key, value.roundTo(3)))
+            result.add(MobileDataUsageAnnual(key.toString(), value.roundTo(3)))
         }
-        result.sortByDescending { mobileDataUsageAnnual -> mobileDataUsageAnnual.year }
+        result.sortByDescending { mobileDataUsageAnnual -> mobileDataUsageAnnual.title.toInt() }
         return result
     }
 }

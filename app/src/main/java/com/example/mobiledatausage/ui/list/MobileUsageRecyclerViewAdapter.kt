@@ -9,7 +9,7 @@ import com.example.mobiledatausage.model.MobileDataUsageAnnual
 
 class MobileUsageRecyclerViewAdapter(
     private val values: List<MobileDataUsageAnnual>,
-    private val onItemClicked: (MobileDataUsageAnnual) -> Unit
+    private val onItemClicked: (Int) -> Unit
 ) : RecyclerView.Adapter<MobileUsageRecyclerViewAdapter.ViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -20,12 +20,12 @@ class MobileUsageRecyclerViewAdapter(
                 parent,
                 false
             )
-        return ViewHolder(viewHolder) {onItemClicked(values[it])}
+        return ViewHolder(viewHolder) {onItemClicked(it)}
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val item = values[position]
-        holder.yearView.text = item.year.toString()
+        holder.yearView.text = item.title.toString()
         holder.dataVolumeView.text = item.dataUsage.toString()
     }
 

@@ -3,7 +3,7 @@ package com.example.mobiledatausage.model
 import com.google.gson.annotations.SerializedName
 
 data class MobileDataUsageAnnual (
-    val year: Int,
+    val title: String,
     val dataUsage:Double,
 )
 
