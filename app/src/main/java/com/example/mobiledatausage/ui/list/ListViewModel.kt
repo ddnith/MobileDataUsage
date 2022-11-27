@@ -8,24 +8,28 @@ import com.example.mobiledatausage.model.MobileDataUsage
 import com.example.mobiledatausage.model.MobileDataUsageAnnual
 import com.example.mobiledatausage.model.repository.MainRepository
 import com.example.mobiledatausage.roundTo
-import kotlinx.coroutines.Dispatchers
+import com.example.mobiledatausage.utils.DispatcherProvider
+import com.example.mobiledatausage.utils.Resource
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
-class ListViewModel(private val mainRepository: MainRepository): ViewModel() {
-
-
-    private val mutableAnnualLiveData = MutableLiveData<List<MobileDataUsageAnnual>>()
+class ListViewModel(
+    private val mainRepository: MainRepository,
+    private val dispatcherProvider: DispatcherProvider
+    ): ViewModel() {
+    val mutableAnnualLiveData = MutableLiveData<List<MobileDataUsageAnnual>>()
 
     fun observeAnnualLiveData(): LiveData<List<MobileDataUsageAnnual>> = mutableAnnualLiveData
 
     fun getMobileDataUsage() {
-        viewModelScope.launch(Dispatchers.IO) {
-            val dataUsage = mainRepository.getDataUsage("a807b7ab-6cad-4aa6-87d0-e283a7353a0f", "100")
-            if (dataUsage != null) {
-                withContext(Dispatchers.Default) {
-                    val combinedData = combineDataUsageAnnually(dataUsage)
+        viewModelScope.launch(dispatcherProvider.io) {
+            val response = mainRepository.getDataUsage("a807b7ab-6cad-4aa6-87d0-e283a7353a0f", "100")
+            withContext(dispatcherProvider.default) {
+                if (response is Resource.Success) {
+                    val combinedData = combineDataUsageAnnually(response.data!!)
                     mutableAnnualLiveData.postValue(combinedData)
+                } else {
+                    mutableAnnualLiveData.postValue(emptyList())
                 }
             }
         }

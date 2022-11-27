@@ -3,6 +3,10 @@ package com.example.mobiledatausage
 import android.content.res.Configuration
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.view.View.GONE
+import android.view.View.VISIBLE
+import android.widget.ProgressBar
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 import com.example.mobiledatausage.model.repository.MainRepository
 import com.example.mobiledatausage.tracking.Tracker
@@ -29,7 +33,7 @@ class MainActivity : AppCompatActivity() {
         val fragmentTransaction = supportFragmentManager.beginTransaction()
 
         // Replace the contents of the container with the new fragment
-        fragmentTransaction.replace(R.id.frame_layout, fragment)
+        fragmentTransaction.add(R.id.frame_layout, fragment)
 
         if (addToBackStack) {
             // Replace the contents of the container with the new fragment
@@ -43,5 +47,17 @@ class MainActivity : AppCompatActivity() {
     override fun onConfigurationChanged(newConfig: Configuration) {
         super.onConfigurationChanged(newConfig)
         tracker.onRotationEvent()
+    }
+
+    fun showLoading() {
+        findViewById<ProgressBar>(R.id.progressBar).visibility = VISIBLE
+    }
+
+    fun hideLoading() {
+        findViewById<ProgressBar>(R.id.progressBar).visibility = GONE
+    }
+
+    fun showMessage(message: String) {
+        Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
     }
 }

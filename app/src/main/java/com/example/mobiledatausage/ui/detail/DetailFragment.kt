@@ -8,12 +8,13 @@ import android.view.ViewGroup
 import androidx.core.view.doOnAttach
 import androidx.lifecycle.Observer
 import androidx.viewpager2.widget.ViewPager2
+import com.example.mobiledatausage.BaseFragment
 import com.example.mobiledatausage.R
 import com.example.mobiledatausage.tracking.Tracker
 import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
-class DetailFragment : Fragment() {
+class DetailFragment : BaseFragment() {
 
     private var position = 0
     private val detailViewModel by viewModel<DetailViewModel>()
@@ -39,8 +40,10 @@ class DetailFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         viewPager = view.findViewById(R.id.viewpager)
+        showLoadingAndMessage(true, "Loading data")
         detailViewModel.getMobileDataUsage()
         viewModel.observeAnnualLiveData().observe(viewLifecycleOwner) {
+            showLoadingAndMessage(false)
             with(viewPager) {
                 registerOnPageChangeCallback(object : ViewPager2.OnPageChangeCallback() {
                     override fun onPageSelected(position: Int) {

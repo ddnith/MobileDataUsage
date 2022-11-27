@@ -8,7 +8,9 @@ import androidx.recyclerview.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.view.isEmpty
 import androidx.lifecycle.Observer
+import com.example.mobiledatausage.BaseFragment
 import com.example.mobiledatausage.MainActivity
 import com.example.mobiledatausage.R
 import com.example.mobiledatausage.ui.detail.DetailFragment
@@ -17,7 +19,7 @@ import org.koin.androidx.viewmodel.ext.android.viewModel
 /**
  * A fragment representing a list of Items.
  */
-class MobileUsageListFragment : Fragment() {
+class MobileUsageListFragment : BaseFragment() {
 
     private var columnCount = 1
     private val listViewModel by viewModel<ListViewModel>()
@@ -29,7 +31,6 @@ class MobileUsageListFragment : Fragment() {
         arguments?.let {
             columnCount = it.getInt(ARG_COLUMN_COUNT)
         }
-        listViewModel.getMobileDataUsage()
     }
 
     override fun onCreateView(
@@ -53,18 +54,20 @@ class MobileUsageListFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        listViewModel.observeAnnualLiveData().observe(viewLifecycleOwner, Observer {
+        showLoadingAndMessage(true, "Loading data")
+        listViewModel.getMobileDataUsage()
+        listViewModel.observeAnnualLiveData().observe(viewLifecycleOwner) {
+            showLoadingAndMessage(false)
             with(list) {
-                adapter = MobileUsageRecyclerViewAdapter(it) {
-                        position ->
+                adapter = MobileUsageRecyclerViewAdapter(it) { position ->
                     activity?.let {
-                        with(activity as MainActivity){
+                        with(activity as MainActivity) {
                             navigateToFragment(DetailFragment.newInstance(position), true)
                         }
                     }
                 }
             }
-        })
+        }
     }
 
     companion object {
