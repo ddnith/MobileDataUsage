@@ -1,9 +1,11 @@
 package com.example.mobiledatausage
 
+import android.content.res.Configuration
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import com.example.mobiledatausage.model.repository.MainRepository
+import com.example.mobiledatausage.tracking.Tracker
 import com.example.mobiledatausage.ui.list.MobileUsageListFragment
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
@@ -13,7 +15,7 @@ import org.koin.android.ext.android.inject
 
 class MainActivity : AppCompatActivity() {
 
-    val mainRepository: MainRepository by inject()
+    private val tracker by inject<Tracker>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -36,5 +38,10 @@ class MainActivity : AppCompatActivity() {
 
         // Complete the changes added above
         fragmentTransaction.commit()
+    }
+
+    override fun onConfigurationChanged(newConfig: Configuration) {
+        super.onConfigurationChanged(newConfig)
+        tracker.onRotationEvent()
     }
 }
