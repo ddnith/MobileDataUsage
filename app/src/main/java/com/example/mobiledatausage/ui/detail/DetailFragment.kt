@@ -1,16 +1,15 @@
 package com.example.mobiledatausage.ui.detail
 
 import android.os.Bundle
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.core.view.doOnAttach
-import androidx.lifecycle.Observer
 import androidx.viewpager2.widget.ViewPager2
 import com.example.mobiledatausage.BaseFragment
 import com.example.mobiledatausage.R
 import com.example.mobiledatausage.tracking.Tracker
+import com.example.mobiledatausage.utils.Resource
 import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
@@ -42,17 +41,21 @@ class DetailFragment : BaseFragment() {
         viewPager = view.findViewById(R.id.viewpager)
         showLoadingAndMessage(true, "Loading data")
         detailViewModel.getMobileDataUsage()
-        viewModel.observeAnnualLiveData().observe(viewLifecycleOwner) {
+        viewModel.observeAnnualLiveData().observe(viewLifecycleOwner) { response ->
             showLoadingAndMessage(false)
-            with(viewPager) {
-                registerOnPageChangeCallback(object : ViewPager2.OnPageChangeCallback() {
-                    override fun onPageSelected(position: Int) {
-                        super.onPageSelected(position)
-                        tracker.onPageSeenEvent(it[position])
-                    }
-                })
-                adapter = ViewPager2Adapter(it)
-                doOnAttach { setCurrentItem(position, false) }
+            if (response is Resource.Success) {
+                with(viewPager) {
+                    registerOnPageChangeCallback(object : ViewPager2.OnPageChangeCallback() {
+                        override fun onPageSelected(position: Int) {
+                            super.onPageSelected(position)
+                            tracker.onPageSeenEvent(response.data!![position])
+                        }
+                    })
+                    adapter = ViewPager2Adapter(response.data!!)
+                    doOnAttach { setCurrentItem(position, false) }
+                }
+            } else {
+                showLoadingAndMessage(message = response.message)
             }
         }
     }

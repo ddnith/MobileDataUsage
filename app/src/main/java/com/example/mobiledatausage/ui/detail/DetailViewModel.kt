@@ -16,8 +16,8 @@ class DetailViewModel(
     private val mainRepository: MainRepository,
     private val dispatcherProvider: DispatcherProvider
     ) : ViewModel() {
-    val mutableAnnualLiveData = MutableLiveData<List<Pair<String, List<Record>>>>()
-    fun observeAnnualLiveData(): LiveData<List<Pair<String, List<Record>>>> = mutableAnnualLiveData
+    val mutableAnnualLiveData = MutableLiveData<Resource<List<Pair<String, List<Record>>>>>()
+    fun observeAnnualLiveData(): LiveData<Resource<List<Pair<String, List<Record>>>>> = mutableAnnualLiveData
 
     fun getMobileDataUsage() {
         viewModelScope.launch(dispatcherProvider.io) {
@@ -26,9 +26,9 @@ class DetailViewModel(
                 withContext(dispatcherProvider.default) {
                     if (response is Resource.Success) {
                         val combinedData = combineDataUsageAnnually(response.data!!)
-                        mutableAnnualLiveData.postValue(combinedData)
+                        mutableAnnualLiveData.postValue(Resource.Success(combinedData))
                     } else {
-                        mutableAnnualLiveData.postValue(emptyList())
+                        mutableAnnualLiveData.postValue(Resource.Error("Something went wrong. Please check your Internet Connection"))
                     }
                 }
             }

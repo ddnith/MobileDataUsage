@@ -14,6 +14,7 @@ import com.example.mobiledatausage.BaseFragment
 import com.example.mobiledatausage.MainActivity
 import com.example.mobiledatausage.R
 import com.example.mobiledatausage.ui.detail.DetailFragment
+import com.example.mobiledatausage.utils.Resource
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 /**
@@ -56,17 +57,22 @@ class MobileUsageListFragment : BaseFragment() {
         super.onViewCreated(view, savedInstanceState)
         showLoadingAndMessage(true, "Loading data")
         listViewModel.getMobileDataUsage()
-        listViewModel.observeAnnualLiveData().observe(viewLifecycleOwner) {
+        listViewModel.observeAnnualLiveData().observe(viewLifecycleOwner) { response ->
             showLoadingAndMessage(false)
-            with(list) {
-                adapter = MobileUsageRecyclerViewAdapter(it) { position ->
-                    activity?.let {
-                        with(activity as MainActivity) {
-                            navigateToFragment(DetailFragment.newInstance(position), true)
+            if(response is Resource.Success) {
+                with(list) {
+                    adapter = MobileUsageRecyclerViewAdapter(response.data!!) { position ->
+                        activity?.let {
+                            with(activity as MainActivity) {
+                                navigateToFragment(DetailFragment.newInstance(position), true)
+                            }
                         }
                     }
                 }
+            } else {
+                showLoadingAndMessage(message = response.message)
             }
+
         }
     }
 

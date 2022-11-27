@@ -27,7 +27,8 @@ class DetailViewModelTest {
         viewModel = DetailViewModel(FakeRepository(), FakeDispatcherProvider(testDispatcher, testDispatcher, testDispatcher, testDispatcher))
         viewModel.getMobileDataUsage()
         val value = viewModel.mutableAnnualLiveData.getOrAwaitValue()
-        assertThat(value).isNotEmpty()
+        assertThat(value.data).isNotEmpty()
+        assertThat(value.message).isNull()
     }
 
     @OptIn(ExperimentalCoroutinesApi::class)
@@ -39,6 +40,7 @@ class DetailViewModelTest {
         viewModel = DetailViewModel(fakeRepository, FakeDispatcherProvider(testDispatcher, testDispatcher, testDispatcher, testDispatcher))
         viewModel.getMobileDataUsage()
         val value = viewModel.mutableAnnualLiveData.getOrAwaitValue()
-        assertThat(value).isEmpty()
+        assertThat(value.data).isNull()
+        assertThat(value.message).isNotNull()
     }
 }

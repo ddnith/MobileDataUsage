@@ -17,9 +17,9 @@ class ListViewModel(
     private val mainRepository: MainRepository,
     private val dispatcherProvider: DispatcherProvider
     ): ViewModel() {
-    val mutableAnnualLiveData = MutableLiveData<List<MobileDataUsageAnnual>>()
+    val mutableAnnualLiveData = MutableLiveData<Resource<List<MobileDataUsageAnnual>>>()
 
-    fun observeAnnualLiveData(): LiveData<List<MobileDataUsageAnnual>> = mutableAnnualLiveData
+    fun observeAnnualLiveData(): LiveData<Resource<List<MobileDataUsageAnnual>>> = mutableAnnualLiveData
 
     fun getMobileDataUsage() {
         viewModelScope.launch(dispatcherProvider.io) {
@@ -27,9 +27,9 @@ class ListViewModel(
             withContext(dispatcherProvider.default) {
                 if (response is Resource.Success) {
                     val combinedData = combineDataUsageAnnually(response.data!!)
-                    mutableAnnualLiveData.postValue(combinedData)
+                    mutableAnnualLiveData.postValue(Resource.Success(combinedData))
                 } else {
-                    mutableAnnualLiveData.postValue(emptyList())
+                    mutableAnnualLiveData.postValue(Resource.Error("Something went wrong. Please check your Internet Connection"))
                 }
             }
         }
